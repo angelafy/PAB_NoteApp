@@ -1,9 +1,24 @@
 import React from "react";
-import { Text, Pressable, Box, VStack, HStack, Heading } from "@gluestack-ui/themed";
+import {
+  Text,
+  Pressable,
+  Box,
+  VStack,
+  HStack,
+  Heading,
+} from "@gluestack-ui/themed";
 import { IconDelete, IconEdit } from "../../../assets";
 import { useNavigation } from "@react-navigation/native";
+import { deleteNote } from "../../../actions/AuthActions";
 
-const ListNote = ({ judul, isi, tanggal, status, category, noteId }) => {
+const ListNote = ({
+  judul,
+  isi,
+  tanggal,
+  status,
+  category,
+  noteId,
+}) => {
   const navigation = useNavigation();
 
   const handleEditClick = () => {
@@ -39,10 +54,8 @@ const ListNote = ({ judul, isi, tanggal, status, category, noteId }) => {
       px={"$5"}
       py={"$3"}
     >
-      {/* Bagian Teks */}
       <VStack>
         <Heading size="2xl">{judul}</Heading>
-
         <Text size="md" maxWidth={"$64"}>
           {isi}
         </Text>
@@ -67,12 +80,10 @@ const ListNote = ({ judul, isi, tanggal, status, category, noteId }) => {
         </Box>
       </VStack>
 
-      {/* Bagian Tombol Edit & Delete */}
-      <HStack space="md">
+      <HStack>
         <Pressable onPress={handleEditClick}>
           <IconEdit />
         </Pressable>
-
         <Pressable onPress={handleDeleteClick}>
           <IconDelete />
         </Pressable>

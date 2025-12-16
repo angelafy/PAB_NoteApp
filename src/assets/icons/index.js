@@ -1,21 +1,21 @@
-import IconHomeActive from './Home-Active.svg'
-import IconProfileActive from './Profile-Active.svg'
-import IconHome from './Home.svg'
-import IconProfile from './Profile.svg'
-import IconAddActive from './Add-Active.svg'
-import IconAdd from './Add.svg'
-import IconEdit from './edit.svg'
-import IconDelete from './Delete.svg'
-import IconLogo from './logo.svg'
+import Add from "./Add.svg";
+import AddActive from "./Add-Active.svg";
+import Delete from "./Delete.svg";
+import Edit from "./edit.svg";
+import Home from "./Home.svg";
+import HomeActive from "./Home-Active.svg";
+import Profile from "./Profile.svg";
+import ProfileActive from "./Profile-Active.svg";
+import Logo from "./logo.svg";
 
 export {
-    IconHome,
-    IconHomeActive,
-    IconProfile,
-    IconProfileActive,
-    IconAdd,
-    IconAddActive,
-    IconEdit,
-    IconDelete,
-    IconLogo
+  Add,
+  AddActive,
+  Delete,
+  Edit,
+  Home,
+  HomeActive,
+  Profile,
+  ProfileActive,
+  Logo,
 };

@@ -1,211 +1,97 @@
 import React, { useState, useEffect } from "react";
 import {
-  Box,
-  FormControl,
-  HStack,
-  VStack,
-  Modal,
-  ModalBackdrop,
-  ModalBody,
-  FormControlLabel,
-  Text,
-  InputField,
-  Input as GlueInput,
-  Pressable,
-  Heading,
-  ModalHeader,
-  ModalContent,
-  ModalFooter,
-  Alert,
-  AlertIcon,
-  AlertText,
-  Center,
+  Box, FormControl, VStack, Modal, ModalBackdrop, ModalBody,
+  Text, InputField, Input as GlueInput, Pressable, Heading,
+  ModalHeader, ModalContent, ModalFooter, Alert, AlertText,
   ScrollView,
 } from "@gluestack-ui/themed";
-import { Alert as RNAlert } from "react-native";
 import { Button, Input, Pilihan } from "../../components";
-import { useNotes } from "../../context/NotesContext";
+import { addNote, getNote } from "../../actions/AuthAction";
 
 const Add = ({ navigation }) => {
-  const { categories, addNote, addCategory } = useNotes();
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [status, setStatus] = useState("");
-  const [category, setCategory] = useState("");
-  const [newCategory, setNewCategory] = useState("");
+  const [form, setForm] = useState({ title: "", content: "", status: "", category: "" });
+  const [categories, setCategories] = useState([]);
+  const [modal, setModal] = useState(false);
+  const [newCat, setNewCat] = useState("");
+  const [alert, setAlert] = useState("");
 
-  const toggleModal = () => {
-    setIsModalVisible(!isModalVisible);
-  };
+  const set = (k) => (v) => setForm((f) => ({ ...f, [k]: v }));
 
-  const handleAddCategory = () => {
-    if (newCategory.trim()) {
-      addCategory(newCategory);
-      setNewCategory("");
-      toggleModal();
-      RNAlert.alert("Success", "Category added successfully!");
-    } else {
-      RNAlert.alert("Error", "Please enter a category name");
+  useEffect(() => {
+    const fetch = async () => {
+      const notes = await getNote();
+      setCategories([...new Set(notes.map((n) => n.category))]);
+    };
+    const unsub = navigation.addListener("focus", fetch);
+    return unsub;
+  }, [navigation]);
+
+  const save = async () => {
+    const ok = Object.values(form).every(Boolean);
+    if (!ok) return setAlert("Data tidak lengkap");
+    try {
+      await addNote(form);
+      navigation.replace("MainApp");
+    } catch (e) {
+      setAlert(e.message);
     }
   };
 
-  const handleSave = () => {
-    if (!title.trim()) {
-      RNAlert.alert("Error", "Please enter a title");
-      return;
-    }
-    if (!content.trim()) {
-      RNAlert.alert("Error", "Please enter content");
-      return;
-    }
-    if (!status) {
-      RNAlert.alert("Error", "Please select a status");
-      return;
-    }
-    if (!category) {
-      RNAlert.alert("Error", "Please select a category");
-      return;
-    }
-
-    // Save note to context
-    addNote({ title, content, status, category });
-    console.log({ title, content, status, category });
-
-    // Reset form
-    setTitle("");
-    setContent("");
-    setStatus("");
-    setCategory("");
-
-    // Navigate back to home
-    navigation.navigate("Home");
-
-    RNAlert.alert("Success", "Task saved successfully!");
+  const addCategory = () => {
+    if (!newCat.trim()) return;
+    setCategories((c) => [...c, newCat]);
+    setNewCat("");
+    setModal(false);
   };
 
   return (
     <ScrollView>
-      <Box flex={1} backgroundColor="$white" pb={"$24"}>
-        <Box
-          shadowColor="$black"
-          shadowOffset={{ width: 0, height: 2 }}
-          shadowOpacity={"$25"}
-          shadowRadius={"$3.5"}
-          elevation={"$5"}
-          backgroundColor="$white"
-          borderRadius={"$md"}
-          mt={"$8"}
-          mx={"$3"}
-          px={"$3"}
-          pt={"$2"}
-        >
-          <Heading size="2xl" color="$black">
-            Add New Task!
-          </Heading>
-          <Text size="sm" color="$black" my={"$1"}>
-            Add your new task here!
-          </Text>
-          <FormControl>
-            <Input
-              label={"Title"}
-              width={"$full"}
-              height={"$10"}
-              onChangeText={(value) => setTitle(value)}
-            />
-            <Input
-              textarea={true}
-              label="Content"
-              width={"$full"}
-              height={"$32"}
-              onChangeText={(value) => setContent(value)}
-            />
-            <Pilihan
-              label="Status"
-              datas={["Active", "Inactive"]}
-              selectedValue={status}
-              onValueChange={(value) => setStatus(value)}
-            />
-            <Pilihan
-              label="Category"
-              datas={categories}
-              selectedValue={category}
-              onValueChange={(value) => setCategory(value)}
-            />
-            <Button
-              type="text"
-              title="Add New Category"
-              onPress={toggleModal}
-              padding={10}
-            />
-            <Button
-              type="text"
-              title="Save"
-              padding={10}
-              onPress={handleSave}
-            />
-          </FormControl>
-        </Box>
+      <Box flex={1} bg="$white" p="$3">
+        <Heading size="2xl">Add New Task!</Heading>
+        <Text size="sm" my="$1">Add your new task here!</Text>
 
-        <Modal isOpen={isModalVisible} onClose={toggleModal}>
+        <FormControl>
+          <Input label="Title" onChangeText={set("title")} />
+          <Input textarea label="Content" height="$32" onChangeText={set("content")} />
+          <Pilihan label="Status" selectedValue={form.status} onValueChange={set("status")} />
+          <Pilihan label="Category" datas={categories} selectedValue={form.category} onValueChange={set("category")} />
+          <Button type="text" title="Add New Category" onPress={() => setModal(true)} />
+          <Button type="text" title="Save" onPress={save} />
+        </FormControl>
+
+        <Modal isOpen={modal} onClose={() => setModal(false)}>
           <ModalBackdrop />
-          <ModalContent
-            backgroundColor="$white"
-            padding={"$2"}
-            borderRadius={"$lg"}
-          >
+          <ModalContent bg="$white" p="$2" borderRadius="$lg">
             <ModalHeader>
               <VStack space="sm">
                 <Heading size="lg">Add New Category</Heading>
-                <Text size="sm">
-                  Having a lot of task must be needing categories too!
-                </Text>
+                <Text size="sm">Create a new category</Text>
               </VStack>
             </ModalHeader>
             <ModalBody>
               <GlueInput>
-                <InputField
-                  role="form"
-                  placeholder="Category Name"
-                  value={newCategory}
-                  onChangeText={(value) => setNewCategory(value)}
-                />
+                <InputField placeholder="Category Name" value={newCat} onChangeText={setNewCat} />
               </GlueInput>
             </ModalBody>
             <ModalFooter>
-              <Box
-                flex={1}
-                flexDirection="column"
-                justifyContent="space-evenly"
-              >
-                <Pressable
-                  backgroundColor="$blue500"
-                  p={"$2"}
-                  borderRadius={"$sm"}
-                  alignItems="center"
-                  onPress={handleAddCategory}
-                >
-                  <Text color="$white" fontWeight="$bold">
-                    Add
-                  </Text>
-                </Pressable>
-
-                <Pressable
-                  backgroundColor="$red700"
-                  p={"$2"}
-                  mt={"$2"}
-                  borderRadius={"$sm"}
-                  alignItems="center"
-                  onPress={toggleModal} // Close modal
-                >
-                  <Text color="$white" fontWeight="$bold">
-                    Cancel
-                  </Text>
-                </Pressable>
-              </Box>
+              <Pressable bg="$blue500" p="$2" borderRadius="$sm" onPress={addCategory}>
+                <Text color="$white" fontWeight="$bold">Add</Text>
+              </Pressable>
+              <Pressable bg="$red700" p="$2" mt="$2" borderRadius="$sm" onPress={() => setModal(false)}>
+                <Text color="$white" fontWeight="$bold">Cancel</Text>
+              </Pressable>
             </ModalFooter>
           </ModalContent>
         </Modal>
+
+        {!!alert && (
+          <Modal isOpen onClose={() => setAlert("")}>
+            <ModalBackdrop />
+            <Alert action="error" variant="solid">
+              <AlertText>{alert}</AlertText>
+            </Alert>
+          </Modal>
+        )}
       </Box>
     </ScrollView>
   );

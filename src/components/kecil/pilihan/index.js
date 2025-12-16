@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Text,
   Select,
@@ -11,7 +12,6 @@ import {
   SelectTrigger,
   FormControlLabel,
 } from "@gluestack-ui/themed";
-import React, { useState } from "react";
 
 const Pilihan = ({
   label,
@@ -26,9 +26,15 @@ const Pilihan = ({
     return (
       <>
         <FormControlLabel marginTop={"$10"}>
-          <Text fontSize={fontSize ? fontSize : "$lg"}>{label}:</Text>
+          <Text fontSize={fontSize ? fontSize : "$lg"}>
+            {label} :
+          </Text>
         </FormControlLabel>
-        <Select onValueChange={onValueChange} selectedValue={selectedValue}>
+
+        <Select
+          onValueChange={onValueChange}
+          selectedValue={selectedValue}
+        >
           <SelectTrigger>
             <SelectInput
               fontSize={fontSize ? fontSize : "$lg"}
@@ -38,6 +44,7 @@ const Pilihan = ({
               color="$black"
             />
           </SelectTrigger>
+
           <SelectPortal>
             <SelectBackdrop />
             <SelectContent>
@@ -47,10 +54,9 @@ const Pilihan = ({
               >
                 <SelectDragIndicator />
               </SelectDragIndicatorWrapper>
-              {datas &&
-                datas.map((data, index) => (
-                  <SelectItem key={index} label={data} value={data} />
-                ))}
+
+              <SelectItem label="Progress" value="progress" />
+              <SelectItem label="Done" value="done" />
             </SelectContent>
           </SelectPortal>
         </Select>
@@ -60,9 +66,15 @@ const Pilihan = ({
     return (
       <>
         <FormControlLabel marginTop={"$10"}>
-          <Text fontSize={fontSize ? fontSize : "$lg"}>{label}:</Text>
+          <Text fontSize={fontSize ? fontSize : "$lg"}>
+            {label} :
+          </Text>
         </FormControlLabel>
-        <Select onValueChange={onValueChange} selectedValue={selectedValue}>
+
+        <Select
+          onValueChange={onValueChange}
+          selectedValue={selectedValue}
+        >
           <SelectTrigger>
             <SelectInput
               fontSize={fontSize ? fontSize : "$lg"}
@@ -72,6 +84,7 @@ const Pilihan = ({
               color="$black"
             />
           </SelectTrigger>
+
           <SelectPortal>
             <SelectBackdrop />
             <SelectContent>
@@ -81,10 +94,14 @@ const Pilihan = ({
               >
                 <SelectDragIndicator />
               </SelectDragIndicatorWrapper>
-              {datas &&
-                datas.map((data, index) => (
-                  <SelectItem key={index} label={data} value={data} />
-                ))}
+
+              {datas.map((data, index) => (
+                <SelectItem
+                  key={index}
+                  label={data}
+                  value={data}
+                />
+              ))}
             </SelectContent>
           </SelectPortal>
         </Select>

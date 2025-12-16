@@ -1,13 +1,40 @@
 import React, { useState } from "react";
 import {
+  Alert,
   Box,
   Text,
   FormControl,
   Heading,
+  AlertText,
+  Modal,
+  ModalBackdrop,
 } from "@gluestack-ui/themed";
 import { Input, Button } from "../../components";
+import { loginUser } from "../../actions/AuthAction";
 
 const Login = ({ navigation }) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+
+  const toggleAlert = (message = "") => {
+    setShowAlert(!showAlert);
+    setAlertMessage(message);
+  };
+
+  const login = () => {
+    if (email && password) {
+      loginUser(email, password)
+        .then(() => {
+          navigation.replace("MainApp");
+        })
+        .catch((error) => {
+          toggleAlert(error.message);
+        });
+    }
+  };
+
   return (
     <Box flex={1} backgroundColor="$blue400" justifyContent="center">
       <Box
@@ -22,44 +49,34 @@ const Login = ({ navigation }) => {
         mx="$6"
         p="$5"
       >
-        <Heading size="3xl" color="$black">
-          Welcome
-        </Heading>
-
-        <Text size="sm" color="$black" my="$1">
+        <Heading size="3xl">Welcome</Heading>
+        <Text size="sm" my="$1">
           Sign in to continue!
         </Text>
 
-        <FormControl mt="$3">
+        <FormControl>
           <Input
             label="Email"
             width="$full"
             height="$10"
-            onChangeText={() => {}}
-            value={null}
+            value={email}
+            onChangeText={setEmail}
           />
           <Input
             label="Password"
             width="$full"
             height="$10"
             secureTextEntry
-            onChangeText={() => {}}
-            value={null}
+            value={password}
+            onChangeText={setPassword}
           />
         </FormControl>
 
-        <Box flexDirection="column" my="$5">
-          <Button
-            title="Login"
-            type="text"
-            padding="$3"
-            onPress={() => navigation.navigate("MainApp")}
-          />
-
-          <Text size="sm" color="$black" mt="$4">
+        <Box my="$5">
+          <Button title="Login" type="text" padding="$3" onPress={login} />
+          <Text size="sm" mt="$4">
             Don't have an account?
           </Text>
-
           <Button
             title="Register"
             type="text"
@@ -68,6 +85,16 @@ const Login = ({ navigation }) => {
           />
         </Box>
       </Box>
+
+      {showAlert && (
+        <Modal isOpen={showAlert} onClose={toggleAlert}>
+          <ModalBackdrop />
+          <Alert mx="$4" action="error" variant="solid">
+            <AlertText fontWeight="$bold">Error!</AlertText>
+            <AlertText>{alertMessage}</AlertText>
+          </Alert>
+        </Modal>
+      )}
     </Box>
   );
 };

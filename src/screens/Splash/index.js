@@ -1,12 +1,18 @@
-import { StyleSheet, View } from "react-native";
 import React, { Component } from "react";
-import { IconLogo } from "../../assets";
+import { StyleSheet, View } from "react-native";
+import { Logo } from "../../assets";
+import { getData } from "../../utils/localStorage";
 
 export default class Splash extends Component {
   componentDidMount() {
-    // Navigasi otomatis ke Login setelah 3 detik
-    setTimeout(() => {
-      this.props.navigation.navigate("Login");
+    setTimeout(async () => {
+      const userData = await getData("user");
+
+      if (userData) {
+        this.props.navigation.replace("MainApp");
+      } else {
+        this.props.navigation.replace("Login");
+      }
     }, 3000);
   }
 
